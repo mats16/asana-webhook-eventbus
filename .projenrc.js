@@ -1,12 +1,18 @@
 const { awscdk } = require('projen');
 const project = new awscdk.AwsCdkTypeScriptApp({
-  cdkVersion: '2.1.0',
+  cdkVersion: '2.24.0',
   defaultReleaseBranch: 'main',
   name: 'asana-webhook-eventbus',
 
-  // deps: [],                /* Runtime dependencies of this module. */
-  // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
-  // devDeps: [],             /* Build dependencies for this module. */
+  deps: [
+    'crypto-js@4.1.1',
+    '@aws-sdk/client-eventbridge',
+    '@aws-sdk/client-ssm',
+    '@types/aws-lambda',
+  ],
+  devDeps: [
+    '@types/crypto-js',
+  ],
   // packageName: undefined,  /* The "name" in package.json. */
 });
 project.synth();

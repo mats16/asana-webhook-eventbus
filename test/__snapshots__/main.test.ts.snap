@@ -1,0 +1,416 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot 1`] = `
+Object {
+  "Outputs": Object {
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FEndpointD4BB684E": Object {
+      "Value": Object {
+        "Fn::Join": Array [
+          "",
+          Array [
+            "https://",
+            Object {
+              "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+            },
+            ".execute-api.",
+            Object {
+              "Ref": "AWS::Region",
+            },
+            ".",
+            Object {
+              "Ref": "AWS::URLSuffix",
+            },
+            "/",
+            Object {
+              "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FDeploymentStageprod80D98979",
+            },
+            "/",
+          ],
+        ],
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "EventBus7B8748AA": Object {
+      "Properties": Object {
+        "Name": "testEventBusD3C7AA2F",
+      },
+      "Type": "AWS::Events::EventBus",
+    },
+    "ReceiveWebhookF29E6128": Object {
+      "DependsOn": Array [
+        "ReceiveWebhookServiceRoleDefaultPolicyC2FCA2FA",
+        "ReceiveWebhookServiceRoleB53C7874",
+      ],
+      "Properties": Object {
+        "Architectures": Array [
+          "arm64",
+        ],
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "706b979471c370bee6b68de2847413a708fe4e8ad34f411d69325ab259301fe3.zip",
+        },
+        "Environment": Object {
+          "Variables": Object {
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "EVENT_BUS_NAME": Object {
+              "Ref": "EventBus7B8748AA",
+            },
+            "STACK_NAME": "test",
+          },
+        },
+        "Handler": "index.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "ReceiveWebhookServiceRoleB53C7874",
+            "Arn",
+          ],
+        },
+        "Runtime": "nodejs16.x",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "ReceiveWebhookServiceRoleB53C7874": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ReceiveWebhookServiceRoleDefaultPolicyC2FCA2FA": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "ssm:GetParameter",
+                "ssm:PutParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:aws:ssm:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/test/*",
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "events:PutEvents",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "EventBus7B8748AA",
+                  "Arn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ReceiveWebhookServiceRoleDefaultPolicyC2FCA2FA",
+        "Roles": Array [
+          Object {
+            "Ref": "ReceiveWebhookServiceRoleB53C7874",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FAccount8DC5C9F9": Object {
+      "DependsOn": Array [
+        "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+      ],
+      "Properties": Object {
+        "CloudWatchRoleArn": Object {
+          "Fn::GetAtt": Array [
+            "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FCloudWatchRole5CD93F6C",
+            "Arn",
+          ],
+        },
+      },
+      "Type": "AWS::ApiGateway::Account",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FCloudWatchRole5CD93F6C": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "apigateway.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FDeployment3C2BBB0D5445bad75fb08bed8e08fb55a3a9b490": Object {
+      "DependsOn": Array [
+        "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FprojectsgidPOST2D41AC24",
+        "testReceiveWebhook5B909A85ApiEventSourceA7A86A4Fprojectsgid7B94F94C",
+        "testReceiveWebhook5B909A85ApiEventSourceA7A86A4Fprojects1D22BC33",
+      ],
+      "Properties": Object {
+        "Description": "Automatically created by the RestApi construct",
+        "RestApiId": Object {
+          "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+        },
+      },
+      "Type": "AWS::ApiGateway::Deployment",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FDeploymentStageprod80D98979": Object {
+      "DependsOn": Array [
+        "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FAccount8DC5C9F9",
+      ],
+      "Properties": Object {
+        "DeploymentId": Object {
+          "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FDeployment3C2BBB0D5445bad75fb08bed8e08fb55a3a9b490",
+        },
+        "RestApiId": Object {
+          "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+        },
+        "StageName": "prod",
+      },
+      "Type": "AWS::ApiGateway::Stage",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA": Object {
+      "Properties": Object {
+        "Name": "testReceiveWebhook5B909A85:ApiEventSourceA7A86A4F",
+      },
+      "Type": "AWS::ApiGateway::RestApi",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4Fprojects1D22BC33": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Fn::GetAtt": Array [
+            "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+            "RootResourceId",
+          ],
+        },
+        "PathPart": "projects",
+        "RestApiId": Object {
+          "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4Fprojectsgid7B94F94C": Object {
+      "Properties": Object {
+        "ParentId": Object {
+          "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4Fprojects1D22BC33",
+        },
+        "PathPart": "{gid}",
+        "RestApiId": Object {
+          "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+        },
+      },
+      "Type": "AWS::ApiGateway::Resource",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FprojectsgidPOST2D41AC24": Object {
+      "Properties": Object {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "POST",
+        "Integration": Object {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":apigateway:",
+                Object {
+                  "Ref": "AWS::Region",
+                },
+                ":lambda:path/2015-03-31/functions/",
+                Object {
+                  "Fn::GetAtt": Array [
+                    "ReceiveWebhookF29E6128",
+                    "Arn",
+                  ],
+                },
+                "/invocations",
+              ],
+            ],
+          },
+        },
+        "ResourceId": Object {
+          "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4Fprojectsgid7B94F94C",
+        },
+        "RestApiId": Object {
+          "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+        },
+      },
+      "Type": "AWS::ApiGateway::Method",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FprojectsgidPOSTApiPermissionTesttesttestReceiveWebhook5B909A85ApiEventSourceA7A86A4FC470DA76POSTprojectsgid4A7F086E": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "ReceiveWebhookF29E6128",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+              },
+              "/test-invoke-stage/POST/projects/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+    "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FprojectsgidPOSTApiPermissiontesttestReceiveWebhook5B909A85ApiEventSourceA7A86A4FC470DA76POSTprojectsgid42A1EB12": Object {
+      "Properties": Object {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": Object {
+          "Fn::GetAtt": Array [
+            "ReceiveWebhookF29E6128",
+            "Arn",
+          ],
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":execute-api:",
+              Object {
+                "Ref": "AWS::Region",
+              },
+              ":",
+              Object {
+                "Ref": "AWS::AccountId",
+              },
+              ":",
+              Object {
+                "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FE410ECBA",
+              },
+              "/",
+              Object {
+                "Ref": "testReceiveWebhook5B909A85ApiEventSourceA7A86A4FDeploymentStageprod80D98979",
+              },
+              "/POST/projects/*",
+            ],
+          ],
+        },
+      },
+      "Type": "AWS::Lambda::Permission",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
