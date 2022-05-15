@@ -28,6 +28,7 @@ export class MyStack extends Stack {
       entry: './src/functions/process-payload/index.ts',
       runtime: lambda.Runtime.NODEJS_16_X,
       architecture: lambda.Architecture.ARM_64,
+      tracing: lambda.Tracing.ACTIVE,
       timeout: Duration.seconds(60),
       environment: {
         EVENT_BUS_NAME: eventBus.eventBusName,
@@ -39,6 +40,7 @@ export class MyStack extends Stack {
       entry: './src/functions/receive-webhook/index.ts',
       runtime: lambda.Runtime.NODEJS_16_X,
       architecture: lambda.Architecture.ARM_64,
+      tracing: lambda.Tracing.ACTIVE,
       environment: {
         PARAMETER_PREFIX: parameterPrefix,
         PROCESS_PAYLOAD_FUNCTION_NAME: processPayloadFunction.functionName,
@@ -53,6 +55,7 @@ export class MyStack extends Stack {
         stageName: 'v1',
         throttlingRateLimit: 40,
         throttlingBurstLimit: 20,
+        tracingEnabled: true,
       },
     });
     api.root.addResource('{proxy+}').addMethod('POST', new LambdaIntegration(receiveWebhookFunction));
