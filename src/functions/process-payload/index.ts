@@ -15,7 +15,7 @@ const asanaEventToEntry = (event: AsanaEvent): PutEventsRequestEntry => {
     EventBusName: eventBusName,
     Source: 'asana',
     Time: new Date(event.created_at),
-    DetailType: capitalizeInitial(event.resource.resource_type) + capitalizeInitial(event.action),
+    DetailType: 'Webhook',
     Detail: JSON.stringify(event),
   };
   return entry;
