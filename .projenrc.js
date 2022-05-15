@@ -6,6 +6,8 @@ const project = new awscdk.AwsCdkTypeScriptApp({
 
   deps: [
     'crypto-js@4.1.1',
+    '@aws-lambda-powertools/logger',
+    '@aws-lambda-powertools/tracer',
     '@aws-sdk/client-eventbridge',
     '@aws-sdk/client-lambda',
     '@aws-sdk/client-ssm',

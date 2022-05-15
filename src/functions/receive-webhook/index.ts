@@ -1,3 +1,5 @@
+import { Logger } from '@aws-lambda-powertools/logger';
+import { Tracer } from '@aws-lambda-powertools/tracer';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { SSMClient, PutParameterCommand, GetParameterCommand } from '@aws-sdk/client-ssm';
 import { fromUtf8 } from '@aws-sdk/util-utf8-node';
@@ -7,8 +9,10 @@ import { HmacSHA256 } from 'crypto-js';
 const parameterPrefix = process.env.PARAMETER_PREFIX;
 const processPayloadFunctionName = process.env.PROCESS_PAYLOAD_FUNCTION_NAME;
 
-const ssm = new SSMClient({});
-const lambda = new LambdaClient({});
+const logger = new Logger({ serviceName: 'ReceiveWebhook' });
+const tracer = new Tracer({ serviceName: 'ReceiveWebhook' });
+const ssm = tracer.captureAWSv3Client(new SSMClient({}));
+const lambda = tracer.captureAWSv3Client(new LambdaClient({}));
 
 const getParameter = async(parameterName: string): Promise<string|undefined> => {
   const cmd = new GetParameterCommand({ Name: parameterName });
@@ -29,10 +33,10 @@ const putParameter = async(parameterName: string, value: string): Promise<void> 
 const verifySignature = (signature: string, secret: string, body: string): boolean => {
   const hash = HmacSHA256(body, secret).toString();
   if (signature == hash) {
-    console.log('signature is valid');
+    logger.info('signature is valid');
     return true;
   } else {
-    console.error('signature is not valid');
+    logger.error('signature is not valid');
     return false;
   }
 };
@@ -56,7 +60,7 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
 
   if (typeof handshakeSecret == 'string') {
     await putParameter(secretParameterName, handshakeSecret);
-    console.log(`Handshake successfully. secret:${secretParameterName}`);
+    logger.info(`Handshake successfully. secret:${secretParameterName}`);
     return {
       headers: { 'X-Hook-Secret': handshakeSecret },
       statusCode: 204,

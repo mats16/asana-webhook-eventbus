@@ -1,10 +1,12 @@
+import { Tracer } from '@aws-lambda-powertools/tracer';
 import { EventBridgeClient, PutEventsCommand, PutEventsRequestEntry } from '@aws-sdk/client-eventbridge';
 import { Handler } from 'aws-lambda';
 import { AsanaPayload, AsanaEvent } from './schema';
 
 const eventBusName = process.env.EVENT_BUS_NAME;
 
-const eventbridge = new EventBridgeClient({});
+const tracer = new Tracer({ serviceName: 'ProcessPayload' });
+const eventbridge = tracer.captureAWSv3Client(new EventBridgeClient({}));
 
 const asanaEventToEntry = (event: AsanaEvent): PutEventsRequestEntry => {
   const entry: PutEventsRequestEntry = {
