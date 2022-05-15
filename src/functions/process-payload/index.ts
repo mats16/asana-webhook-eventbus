@@ -6,10 +6,6 @@ const eventBusName = process.env.EVENT_BUS_NAME;
 
 const eventbridge = new EventBridgeClient({});
 
-const capitalizeInitial = (text: string): string => {
-  return text.charAt(0).toUpperCase() + text.slice(1);
-};
-
 const asanaEventToEntry = (event: AsanaEvent): PutEventsRequestEntry => {
   const entry: PutEventsRequestEntry = {
     EventBusName: eventBusName,
@@ -21,7 +17,7 @@ const asanaEventToEntry = (event: AsanaEvent): PutEventsRequestEntry => {
   return entry;
 };
 
-const putEvents = async(events: AsanaEvent[], entries: PutEventsRequestEntry[] =[], i: number = 0) => {
+const putEvents = async(events: AsanaEvent[], entries: PutEventsRequestEntry[] = [], i: number = 0) => {
   const event = events[i];
   console.log(JSON.stringify(event));
   const entry = asanaEventToEntry(event);
