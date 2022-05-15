@@ -7,22 +7,23 @@ import { HmacSHA256 } from 'crypto-js';
 const parameterPrefix = process.env.PARAMETER_PREFIX;
 const processPayloadFunctionName = process.env.PROCESS_PAYLOAD_FUNCTION_NAME;
 
+const ssm = new SSMClient({});
+const lambda = new LambdaClient({});
+
 const getParameter = async(parameterName: string): Promise<string|undefined> => {
-  const client = new SSMClient({});
   const cmd = new GetParameterCommand({ Name: parameterName });
-  const { Parameter } = await client.send(cmd);
+  const { Parameter } = await ssm.send(cmd);
   return Parameter?.Value;
 };
 
 const putParameter = async(parameterName: string, value: string): Promise<void> => {
-  const client = new SSMClient({});
   const cmd = new PutParameterCommand({
     Name: parameterName,
     Value: value,
     Type: 'String',
     Description: 'Secret to verify signature from Asana webhook',
   });
-  await client.send(cmd);
+  await ssm.send(cmd);
 };
 
 const verifySignature = (signature: string, secret: string, body: string): boolean => {
@@ -37,13 +38,12 @@ const verifySignature = (signature: string, secret: string, body: string): boole
 };
 
 const processPayload = async(body: string) => {
-  const client = new LambdaClient({});
   const cmd = new InvokeCommand({
     FunctionName: processPayloadFunctionName,
     Payload: fromUtf8(body),
     InvocationType: 'Event',
   });
-  await client.send(cmd);
+  await lambda.send(cmd);
 };
 
 
