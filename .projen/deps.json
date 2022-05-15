@@ -25,7 +25,7 @@
     },
     {
       "name": "aws-cdk",
-      "version": "^2.24.0",
+      "version": "^2.24.1",
       "type": "build"
     },
     {
@@ -91,7 +91,15 @@
       "type": "runtime"
     },
     {
+      "name": "@aws-sdk/client-lambda",
+      "type": "runtime"
+    },
+    {
       "name": "@aws-sdk/client-ssm",
+      "type": "runtime"
+    },
+    {
+      "name": "@aws-sdk/util-utf8-node",
       "type": "runtime"
     },
     {
@@ -100,7 +108,7 @@
     },
     {
       "name": "aws-cdk-lib",
-      "version": "^2.24.0",
+      "version": "^2.24.1",
       "type": "runtime"
     },
     {
