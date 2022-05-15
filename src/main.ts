@@ -1,8 +1,8 @@
 import { App, Stack, StackProps, Duration, CfnOutput } from 'aws-cdk-lib';
+import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { EventBus } from 'aws-cdk-lib/aws-events';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { ApiEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
 
@@ -12,9 +12,9 @@ export class MyStack extends Stack {
 
     const eventBus = new EventBus(this, 'EventBus');
 
-    const parameterPrefix = `/${this.stackName}/HookSecret`;
+    const parameterPrefix = `/${this.stackName}/Webhook/Secrets`;
 
-    const parameterStatement = new iam.PolicyStatement({
+    const parameterStatement = new PolicyStatement({
       actions: [
         'ssm:GetParameter',
         'ssm:PutParameter',
@@ -24,7 +24,7 @@ export class MyStack extends Stack {
       ],
     });
 
-    const processPayloadFunction = new NodejsFunction(this, 'ProcessPayload', {
+    const processPayloadFunction = new NodejsFunction(this, 'ProcessPayloadFunction', {
       entry: './src/functions/process-payload/index.ts',
       runtime: lambda.Runtime.NODEJS_16_X,
       architecture: lambda.Architecture.ARM_64,
@@ -35,7 +35,7 @@ export class MyStack extends Stack {
     });
     eventBus.grantPutEventsTo(processPayloadFunction);
 
-    const receiveWebhookFunction = new NodejsFunction(this, 'ReceiveWebhook', {
+    const receiveWebhookFunction = new NodejsFunction(this, 'ReceiveWebhookFunction', {
       entry: './src/functions/receive-webhook/index.ts',
       runtime: lambda.Runtime.NODEJS_16_X,
       architecture: lambda.Architecture.ARM_64,
@@ -44,12 +44,21 @@ export class MyStack extends Stack {
         PROCESS_PAYLOAD_FUNCTION_NAME: processPayloadFunction.functionName,
       },
       initialPolicy: [parameterStatement],
-      events: [new ApiEventSource('POST', '/{proxy+}')],
     });
     processPayloadFunction.grantInvoke(receiveWebhookFunction);
 
-    new CfnOutput(this, 'EventBusName', { value: eventBus.eventBusName, exportName: `${this.stackName}Name` });
-    new CfnOutput(this, 'EventBusArn', { value: eventBus.eventBusArn, exportName: `${this.stackName}Arn` });
+    const api = new RestApi(this, 'API', {
+      restApiName: 'AsanaEventBus-ReceiveWebhookApi',
+      deployOptions: {
+        stageName: 'v1',
+        throttlingRateLimit: 40,
+        throttlingBurstLimit: 20,
+      },
+    });
+    api.root.addResource('{proxy+}').addMethod('POST', new LambdaIntegration(receiveWebhookFunction));
+
+    new CfnOutput(this, 'EventBusName', { value: eventBus.eventBusName, exportName: 'AsanaEventBusName' });
+    new CfnOutput(this, 'EventBusArn', { value: eventBus.eventBusArn, exportName: 'AsanaEventBusArn' });
   }
 }
 
