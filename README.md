@@ -18,7 +18,7 @@ curl -X POST https://app.asana.com/api/1.0/webhooks \
 {
   "data": {
     "resource": "{project_gid}",
-    "target": "https://0000000000.execute-api.us-west-2.amazonaws.com/v1/{project_gid}"
+    "target": "https://0000000000.execute-api.us-west-2.amazonaws.com/v1/webhook/{project_gid}"
   }
 }
 ```

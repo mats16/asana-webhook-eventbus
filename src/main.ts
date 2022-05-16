@@ -58,7 +58,7 @@ export class MyStack extends Stack {
         tracingEnabled: true,
       },
     });
-    api.root.addResource('{proxy+}').addMethod('POST', new LambdaIntegration(receiveWebhookFunction));
+    api.root.addResource('webhook').addResource('{identity}').addMethod('POST', new LambdaIntegration(receiveWebhookFunction));
 
     new CfnOutput(this, 'EventBusName', { value: eventBus.eventBusName, exportName: 'AsanaEventBusName' });
     new CfnOutput(this, 'EventBusArn', { value: eventBus.eventBusArn, exportName: 'AsanaEventBusArn' });

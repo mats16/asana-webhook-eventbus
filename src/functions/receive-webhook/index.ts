@@ -52,11 +52,11 @@ const processPayload = async(body: string) => {
 
 
 export const handler: APIGatewayProxyHandler = async (event, _context) => {
-  const { path, body } = event;
+  const { body, pathParameters } = event;
   const signature = event.headers['X-Hook-Signature'];
   const handshakeSecret = event.headers['X-Hook-Secret'];
 
-  const secretParameterName = `${parameterPrefix}${path}`;
+  const secretParameterName = `${parameterPrefix}/${pathParameters?.identity}`;
 
   if (typeof handshakeSecret == 'string') {
     await putParameter(secretParameterName, handshakeSecret);
