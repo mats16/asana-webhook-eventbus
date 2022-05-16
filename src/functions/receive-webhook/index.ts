@@ -82,5 +82,5 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
   }
 
   await processPayload(body);
-  return { statusCode: 204 } as APIGatewayProxyResult;
+  return { statusCode: 200 } as APIGatewayProxyResult;
 };
