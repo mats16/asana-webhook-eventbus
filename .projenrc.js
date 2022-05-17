@@ -3,7 +3,6 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   cdkVersion: '2.24.1',
   defaultReleaseBranch: 'main',
   name: 'asana-webhook-eventbus',
-
   deps: [
     'crypto-js@4.1.1',
     '@aws-lambda-powertools/logger',
@@ -17,6 +16,5 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   devDeps: [
     '@types/crypto-js',
   ],
-  // packageName: undefined,  /* The "name" in package.json. */
 });
 project.synth();

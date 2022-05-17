@@ -1,4 +1,4 @@
-name: deploy
+name: publish
 on:
   push:
     branches:
@@ -6,9 +6,10 @@ on:
   workflow_dispatch: {}
 env:
   AWS_REGION : us-west-2
+  BUCKET_NAME: mats-toolbox
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # needed to interact with GitHub's OIDC Token endpoint.
@@ -24,11 +25,12 @@ jobs:
       - name: node.js setup
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16'
       - name: Install dependencies
         run: yarn install --check-files
       - name: Build
         run: npx projen build
-      - name: Deploy
-        id: deploy
-        run: $(npm bin)/cdk deploy --require-approval never
+      - name: Synth
+        run: npx projen synth > template.yaml
+      - name: Publish
+        run: aws s3 cp template.yaml s3://${{ env.BUCKET_NAME }}/asana-webhook-eventbus/latest/template.yaml --acl public-read
