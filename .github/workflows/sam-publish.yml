@@ -49,4 +49,4 @@ jobs:
         run: sam publish --template-file output-template.yaml
 
       - name: template publish
-        run: aws s3 put ./output-template.yaml s3://${{ env.BUCKET_NAME }}/asana-webhook-eventbus/latest/template.yaml --acl public-read
+        run: aws s3 cp ./output-template.yaml s3://${{ env.BUCKET_NAME }}/asana-webhook-eventbus/latest/template.yaml --acl public-read
