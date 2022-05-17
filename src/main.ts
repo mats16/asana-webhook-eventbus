@@ -10,15 +10,14 @@ export class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
     super(scope, id, props);
 
-    const meta = this.templateOptions.metadata;
-    if (typeof meta != 'undefined' ) {
-      meta['AWS::ServerlessRepo::Application'] = {
+    this.templateOptions.metadata = {
+      'AWS::ServerlessRepo::Application': {
         Name: 'AsanaEventBus',
         Description: 'EventBus for Asana Webhook',
         Author: 'mats',
         SpdxLicenseId: 'Apache-2.0',
-      };
-    }
+      },
+    };
 
     const eventBus = new EventBus(this, 'EventBus');
 

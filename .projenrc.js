@@ -16,5 +16,8 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   devDeps: [
     '@types/crypto-js',
   ],
+  gitignore: [
+    '.aws-sam/',
+  ],
 });
 project.synth();
