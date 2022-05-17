@@ -49,7 +49,7 @@ jobs:
         run: sam build -t ./cdk.out/AsanaEventBus.template.json
 
       - name: sam package
-        run: sam package --output-template-file output-template.yaml
+        run: sam package --s3-bucket ${{ env.BUCKET_NAME }} --s3-prefix asana-webhook-eventbus --output-template-file output-template.yaml
 
       - name: sam publish
         run: sam publish --template-file output-template.yaml
