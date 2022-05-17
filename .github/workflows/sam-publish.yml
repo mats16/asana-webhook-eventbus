@@ -1,0 +1,52 @@
+name: publish
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+env:
+  AWS_REGION : us-west-2
+  BUCKET_NAME: mats-toolbox
+  AWS_SAM_CLI_URL: https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # needed to interact with GitHub's OIDC Token endpoint.
+      contents: read
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: node.js setup
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Install AWS SAM CLI
+        run: |
+          curl -L "${AWS_SAM_CLI_URL}" -o /tmp/aws-sam-cli-linux-x86_64.zip
+          unzip /tmp/aws-sam-cli-linux-x86_64.zip -d /tmp/sam-installation
+          /tmp/sam-installation/install
+
+      - name: Install dependencies
+        run: yarn install --check-files
+
+      - name: cdk build
+        run: npx projen build
+
+      - name: cdk synth
+        run: $(npm bin)/cdk synth --no-staging
+
+      - name: sam build
+        run: sam build -t ./cdk.out/AsanaEventBus.template.json
+
+      - name: sam package
+        run: sam package --s3-bucket ${{ env.BUCKET_NAME }} --s3-prefix asana-webhook-eventbus/ --output-template-file output-template.yaml
+
+      - name: sam publish
+        run: sam publish --template-file output-template.yaml
