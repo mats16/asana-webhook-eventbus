@@ -30,12 +30,6 @@ jobs:
         with:
           node-version: '16'
 
-      #- name: Install AWS SAM CLI
-      #  run: |
-      #    curl -L "${AWS_SAM_CLI_URL}" -o /tmp/aws-sam-cli-linux-x86_64.zip
-      #    unzip /tmp/aws-sam-cli-linux-x86_64.zip -d /tmp/sam-installation
-      #    /tmp/sam-installation/install
-
       - name: Install dependencies
         run: yarn install --check-files
 
@@ -53,3 +47,6 @@ jobs:
 
       - name: sam publish
         run: sam publish --template-file output-template.yaml
+
+      - name: template publish
+        run: aws s3 put ./output-template.yaml s3://${{ env.BUCKET_NAME }}/asana-webhook-eventbus/latest/template.yaml --acl public-read
