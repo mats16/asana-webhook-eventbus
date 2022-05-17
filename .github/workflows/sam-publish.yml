@@ -21,17 +21,20 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
+
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: node.js setup
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - name: Install AWS SAM CLI
-        run: |
-          curl -L "${AWS_SAM_CLI_URL}" -o /tmp/aws-sam-cli-linux-x86_64.zip
-          unzip /tmp/aws-sam-cli-linux-x86_64.zip -d /tmp/sam-installation
-          /tmp/sam-installation/install
+
+      #- name: Install AWS SAM CLI
+      #  run: |
+      #    curl -L "${AWS_SAM_CLI_URL}" -o /tmp/aws-sam-cli-linux-x86_64.zip
+      #    unzip /tmp/aws-sam-cli-linux-x86_64.zip -d /tmp/sam-installation
+      #    /tmp/sam-installation/install
 
       - name: Install dependencies
         run: yarn install --check-files
