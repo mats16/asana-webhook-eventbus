@@ -5,6 +5,7 @@ import { SSMClient, PutParameterCommand, GetParameterCommand } from '@aws-sdk/cl
 import { fromUtf8 } from '@aws-sdk/util-utf8-node';
 import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import { HmacSHA256 } from 'crypto-js';
+import { AsanaPayload } from '../schema';
 
 const parameterPrefix = process.env.PARAMETER_PREFIX;
 const processPayloadFunctionName = process.env.PROCESS_PAYLOAD_FUNCTION_NAME;
@@ -20,12 +21,13 @@ const getParameter = async(parameterName: string): Promise<string|undefined> => 
   return Parameter?.Value;
 };
 
-const putParameter = async(parameterName: string, value: string): Promise<void> => {
+const putParameter = async(parameterName: string, value: string, overwrite: boolean = false): Promise<void> => {
   const cmd = new PutParameterCommand({
     Name: parameterName,
     Value: value,
     Type: 'String',
     Description: 'Secret to verify signature from Asana webhook',
+    Overwrite: overwrite,
   });
   await ssm.send(cmd);
 };
@@ -41,10 +43,10 @@ const verifySignature = (signature: string, secret: string, body: string): boole
   }
 };
 
-const processPayload = async(body: string) => {
+const processPayload = async(payload: string) => {
   const cmd = new InvokeCommand({
     FunctionName: processPayloadFunctionName,
-    Payload: fromUtf8(body),
+    Payload: fromUtf8(payload),
     InvocationType: 'Event',
   });
   await lambda.send(cmd);
@@ -81,6 +83,13 @@ export const handler: APIGatewayProxyHandler = async (event, _context) => {
     return { statusCode: 400, body: 'Signature is not valid.' } as APIGatewayProxyResult;
   }
 
-  await processPayload(body);
+  try {
+    const payload: AsanaPayload = JSON.parse(body);
+    if (payload.events.length > 0) {
+      await processPayload(JSON.stringify(payload));
+    }
+  } catch (error) {
+    logger.error(JSON.stringify(error));
+  }
   return { statusCode: 200 } as APIGatewayProxyResult;
 };

@@ -1,19 +1,24 @@
 import { Tracer } from '@aws-lambda-powertools/tracer';
 import { EventBridgeClient, PutEventsCommand, PutEventsRequestEntry } from '@aws-sdk/client-eventbridge';
 import { Handler } from 'aws-lambda';
-import { AsanaPayload, AsanaEvent } from './schema';
+import { AsanaPayload, AsanaEvent } from '../schema';
 
 const eventBusName = process.env.EVENT_BUS_NAME;
 
 const tracer = new Tracer({ serviceName: 'ProcessPayload' });
 const eventbridge = tracer.captureAWSv3Client(new EventBridgeClient({}));
 
+const capitalizeInitial = (text: string): string => {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 const asanaEventToEntry = (event: AsanaEvent): PutEventsRequestEntry => {
+  const { created_at, action, resource } = event;
   const entry: PutEventsRequestEntry = {
     EventBusName: eventBusName,
     Source: 'asana',
-    Time: new Date(event.created_at),
-    DetailType: 'Webhook',
+    Time: new Date(created_at),
+    DetailType: capitalizeInitial(resource.resource_type) + capitalizeInitial(action),
     Detail: JSON.stringify(event),
   };
   return entry;
@@ -38,5 +43,6 @@ const putEvents = async(events: AsanaEvent[], entries: PutEventsRequestEntry[] =
 };
 
 export const handler: Handler<AsanaPayload, void> = async (payload, _context) => {
-  await putEvents(payload.events);
+  const asanaEvents = payload.events;
+  await putEvents(asanaEvents);
 };
