@@ -33,14 +33,14 @@ jobs:
       - name: Install dependencies
         run: yarn install --check-files
 
-      - name: cdk build
-        run: npx projen build
+      #- name: cdk build
+      #  run: npx projen build
 
       - name: cdk synth
-        run: $(npm bin)/cdk synth --no-staging --no-version-reporting
+        run: $(npm bin)/cdk synth --build --no-staging --no-version-reporting > template.json
 
       - name: sam build
-        run: sam build -t ./cdk.out/AsanaEventBus.template.json
+        run: sam build -t template.json
 
       - name: sam package
         run: sam package --s3-bucket ${{ env.BUCKET_NAME }} --s3-prefix asana-webhook-eventbus/sam-assets --output-template-file output-template.yaml
