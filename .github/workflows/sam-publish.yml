@@ -16,8 +16,6 @@ jobs:
       id-token: write # needed to interact with GitHub's OIDC Token endpoint.
       contents: read
     steps:
-      - name: version
-        run: sam --version
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -39,7 +37,7 @@ jobs:
         run: npx projen build
 
       - name: cdk synth
-        run: $(npm bin)/cdk synth --no-staging
+        run: $(npm bin)/cdk synth --no-staging --no-version-reporting
 
       - name: sam build
         run: sam build -t ./cdk.out/AsanaEventBus.template.json
