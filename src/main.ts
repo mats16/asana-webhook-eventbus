@@ -21,7 +21,7 @@ export class MyStack extends Stack {
         ReadmeUrl: 'README.md',
         HomePageUrl: 'https://github.com/mats16/asana-webhook-eventbus',
         SourceCodeUrl: 'https://github.com/mats16/asana-webhook-eventbus',
-        SemanticVersion: '0.0.4',
+        SemanticVersion: '0.0.1',
       },
     };
 
