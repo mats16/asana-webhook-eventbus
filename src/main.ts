@@ -1,4 +1,4 @@
-import { App, Stack, StackProps, Duration, CfnOutput } from 'aws-cdk-lib';
+import { App, Stack, StackProps, Duration, CfnOutput, CfnParameter } from 'aws-cdk-lib';
 import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
@@ -21,13 +21,25 @@ export class MyStack extends Stack {
         ReadmeUrl: 'README.md',
         HomePageUrl: 'https://github.com/mats16/asana-webhook-eventbus',
         SourceCodeUrl: 'https://github.com/mats16/asana-webhook-eventbus',
-        SemanticVersion: '0.0.2',
+        SemanticVersion: '0.0.3',
       },
     };
 
-    const eventBus = new EventBus(this, 'EventBus');
+    const eventBusExportName = new CfnParameter(this, 'EventBusExportName', {
+      description: 'Export name of EventBus',
+      type: 'String',
+      allowedPattern: '^[\\w]+$',
+      default: 'AsanaEventBusName',
+    });
 
-    const parameterPrefix = `/${this.stackName}/Webhook/Secrets`;
+    const parameterStorePrefix = new CfnParameter(this, 'ParameterStorePrefix', {
+      description: 'Namespace to store secrets received from Asana at the handshake',
+      type: 'String',
+      allowedPattern: '^(/[\\w]+)+[^/]$',
+      default: '/Asana/Webhook/Secrets',
+    });
+
+    const eventBus = new EventBus(this, 'EventBus');
 
     const parameterStatement = new PolicyStatement({
       actions: [
@@ -35,7 +47,7 @@ export class MyStack extends Stack {
         'ssm:PutParameter',
       ],
       resources: [
-        `arn:aws:ssm:${this.region}:${this.account}:parameter${parameterPrefix}/*`,
+        `arn:aws:ssm:${this.region}:${this.account}:parameter${parameterStorePrefix.valueAsString}/*`,
       ],
     });
 
@@ -57,7 +69,7 @@ export class MyStack extends Stack {
       architecture: lambda.Architecture.ARM_64,
       tracing: lambda.Tracing.ACTIVE,
       environment: {
-        PARAMETER_PREFIX: parameterPrefix,
+        PARAMETER_PREFIX: parameterStorePrefix.valueAsString,
         PROCESS_PAYLOAD_FUNCTION_NAME: processPayloadFunction.functionName,
       },
       initialPolicy: [parameterStatement],
@@ -75,8 +87,7 @@ export class MyStack extends Stack {
     });
     api.root.addResource('webhook').addResource('{identity}').addMethod('POST', new LambdaIntegration(receiveWebhookFunction));
 
-    new CfnOutput(this, 'EventBusName', { value: eventBus.eventBusName, exportName: 'AsanaEventBusName' });
-    new CfnOutput(this, 'EventBusArn', { value: eventBus.eventBusArn, exportName: 'AsanaEventBusArn' });
+    new CfnOutput(this, 'EventBusName', { value: eventBus.eventBusName, exportName: eventBusExportName.valueAsString });
   }
 }
 
