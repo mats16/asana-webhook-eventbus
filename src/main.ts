@@ -17,11 +17,11 @@ export class MyStack extends Stack {
         Description: 'EventBus for Asana Webhook',
         Author: 'mats',
         SpdxLicenseId: 'Apache-2.0',
-        LicenseUrl: 'LICENSE',
+        LicenseUrl: 'LICENSE.txt',
         ReadmeUrl: 'README.md',
         HomePageUrl: 'https://github.com/mats16/asana-webhook-eventbus',
         SourceCodeUrl: 'https://github.com/mats16/asana-webhook-eventbus',
-        SemanticVersion: '0.0.2',
+        SemanticVersion: '0.0.3',
       },
     };
 
