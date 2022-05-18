@@ -10,6 +10,7 @@ export class MyStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps = {}) {
     super(scope, id, props);
 
+    this.templateOptions.transforms = ['AWS::Serverless-2016-10-31'];
     this.templateOptions.metadata = {
       'AWS::ServerlessRepo::Application': {
         Name: 'AsanaEventBus',
