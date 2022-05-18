@@ -7,7 +7,6 @@ on:
 env:
   AWS_REGION : us-west-2
   BUCKET_NAME: mats-toolbox
-  AWS_SAM_CLI_URL: https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
 
 jobs:
   publish:
