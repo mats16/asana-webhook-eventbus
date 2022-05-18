@@ -4,12 +4,6 @@ Please read [Asana's developers guide](https://developers.asana.com/docs/webhook
 
 ## How to use
 
-### Deploy
-
-[![launch-stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)][1]
-
-[1]: https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=AsanaEventBus&templateURL=https://s3.amazonaws.com/mats-toolbox/asana-webhook-eventbus/latest/template.yaml
-
 ### Establish a webhook
 
 ```
